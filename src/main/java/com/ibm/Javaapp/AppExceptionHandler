@@ -1,1 +1,100 @@
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+
+// Custom response structure for the application
+@RestControllerAdvice
+public class AppExceptionHandler {
+
+    // Handle NullPointerException
+    @ExceptionHandler(value = { NullPointerException.class })
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    protected AppResponse<Object> handleNullPointerException(NullPointerException ex, WebRequest request) {
+        return new AppResponse<>("ERR-001", null, System.currentTimeMillis(),
+                new ErrorResponse(ex.getMessage(), "Null Pointer Exception"));
+    }
+
+    // Handle IllegalArgumentException
+    @ExceptionHandler(value = { IllegalArgumentException.class })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected AppResponse<Object> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        return new AppResponse<>("ERR-002", null, System.currentTimeMillis(),
+                new ErrorResponse(ex.getMessage(), "Illegal Argument Exception"));
+    }
+
+    // Handle IllegalStateException
+    @ExceptionHandler(value = { IllegalStateException.class })
+    @ResponseStatus(HttpStatus.CONFLICT)
+    protected AppResponse<Object> handleIllegalStateException(IllegalStateException ex, WebRequest request) {
+        return new AppResponse<>("ERR-003", null, System.currentTimeMillis(),
+                new ErrorResponse(ex.getMessage(), "Illegal State Exception"));
+    }
+
+    // Handle NumberFormatException
+    @ExceptionHandler(value = { NumberFormatException.class })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected AppResponse<Object> handleNumberFormatException(NumberFormatException ex, WebRequest request) {
+        return new AppResponse<>("ERR-004", null, System.currentTimeMillis(),
+                new ErrorResponse(ex.getMessage(), "Number Format Exception"));
+    }
+
+    // Handle ArrayIndexOutOfBoundsException
+    @ExceptionHandler(value = { ArrayIndexOutOfBoundsException.class })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected AppResponse<Object> handleArrayIndexOutOfBoundsException(ArrayIndexOutOfBoundsException ex, WebRequest request) {
+        return new AppResponse<>("ERR-005", null, System.currentTimeMillis(),
+                new ErrorResponse(ex.getMessage(), "Array Index Out of Bounds"));
+    }
+
+    // Handle ResourceNotFoundException (custom exception for resources not found)
+    @ExceptionHandler(value = { ResourceNotFoundException.class })
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected AppResponse<Object> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+        return new AppResponse<>("ERR-006", null, System.currentTimeMillis(),
+                new ErrorResponse(ex.getMessage(), "Resource Not Found"));
+    }
+
+    // Handle AccessDeniedException
+    @ExceptionHandler(value = { AccessDeniedException.class })
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    protected AppResponse<Object> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        return new AppResponse<>("ERR-007", null, System.currentTimeMillis(),
+                new ErrorResponse(ex.getMessage(), "Access Denied"));
+    }
+
+    // Handle HttpMessageNotReadableException (e.g., JSON parse error)
+    @ExceptionHandler(value = { HttpMessageNotReadableException.class })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected AppResponse<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
+        return new AppResponse<>("ERR-008", null, System.currentTimeMillis(),
+                new ErrorResponse("Malformed JSON request", "Bad Request"));
+    }
+
+    // Handle MethodArgumentNotValidException (validation errors)
+    @ExceptionHandler(value = { MethodArgumentNotValidException.class })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected AppResponse<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
+        String errorMessage = ex.getBindingResult().getFieldError().getDefaultMessage();
+        return new AppResponse<>("ERR-009", null, System.currentTimeMillis(),
+                new ErrorResponse(errorMessage, "Validation Error"));
+    }
+
+    // Handle HttpRequestMethodNotSupportedException
+    @ExceptionHandler(value = { HttpRequestMethodNotSupportedException.class })
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    protected AppResponse<Object> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex, WebRequest request) {
+        return new AppResponse<>("ERR-010", null, System.currentTimeMillis(),
+                new ErrorResponse(ex.getMessage(), "Method Not Allowed"));
+    }
+
+    // Handle general Exception as a fallback for unhandled exceptions
+    @ExceptionHandler(value = { Exception.class })
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    protected AppResponse<Object> handleGenericException(Exception ex, WebRequest request) {
+        return new AppResponse<>("ERR-999", null, System.currentTimeMillis(),
+                new ErrorResponse(ex.getMessage(), "Internal Server Error"));
+    }
+}
